@@ -14,7 +14,9 @@ class TournamentGenerator {
       }
       console.log("Poules générées :", this.poules);
   }
-
+  getPoules(){
+      return this.poules;
+  }
 
   simulatePoulesMatches() {
       let qualifiedTeams = [];
