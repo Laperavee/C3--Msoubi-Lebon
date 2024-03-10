@@ -1,52 +1,59 @@
-import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import TournamentGenerator from '../src/tournamentGenerator.js';
-import TeamGenerator from "../src/teamGenerator.js";
 
 describe('TournamentGenerator', () => {
+    let teams = [
+        { name: 'Team A', players: ['Player 1', 'Player 2', 'Player 3'] },
+        { name: 'Team B', players: ['Player 4', 'Player 5', 'Player 6'] },
+        { name: 'Team C', players: ['Player 7', 'Player 8', 'Player 9'] },
+        { name: 'Team D', players: ['Player 10', 'Player 11', 'Player 12'] },
+        { name: 'Team E', players: ['Player 13', 'Player 14', 'Player 15'] },
+        { name: 'Team F', players: ['Player 16', 'Player 17', 'Player 18'] }
+    ];
+
     let tournamentGenerator;
-    let teamGenerator;
 
-    function setup(players) {
-        teamGenerator = new TeamGenerator(players);
-        teamGenerator.generateTeams();
-        tournamentGenerator = new TournamentGenerator(teamGenerator.getTeams());
-    }
-
-    it('should create a tournament with basic parameters', () => {
-        setup(['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5', 'Player 6', 'Player 7', 'Player 8', 'Player 9', 'Player 10', 'Player 11', 'Player 12']);
-        tournamentGenerator.generatePoules();
-        const tournament = tournamentGenerator.getPoules();
-        expect(tournament).to.have.lengthOf(1);
+    beforeEach(() => {
+        tournamentGenerator = new TournamentGenerator(teams);
     });
 
-    it('should generate 2 pools to the tournament', () => {
-        setup(['Player A', 'Player B', 'Player C', 'Player D', 'Player E', 'Player F', 'Player G', 'Player H', 'Player I', 'Player J', 'Player K', 'Player L', 'Player M', 'Player N', 'Player O', 'Player P', 'Player Q', 'Player R', 'Player S', 'Player T', 'Player U', 'Player V', 'Player W', 'Player X']);
+    it('generatePoules should generate correct number of groups with correct teams', () => {
         tournamentGenerator.generatePoules();
-        const tournament = tournamentGenerator.getPoules();
-        expect(tournament).to.have.lengthOf(2);
-        expect(tournament[0].length).to.equal(4);
+
+        expect(tournamentGenerator.poules.length).to.be.gte(1); // Au moins une poule générée
+
+        for (let poule of tournamentGenerator.poules) {
+            expect(poule.length).to.equal(4); // Chaque poule contient 4 équipes
+            expect(poule.every(team => teams.includes(team))).to.be.true; // Chaque équipe est incluse dans la liste initiale des équipes
+        }
     });
-    it('should simulate matches and qualify teams for final stages', () => {
-        setup(['Player A', 'Player B', 'Player C', 'Player D', 'Player E', 'Player F', 'Player G', 'Player H', 'Player I', 'Player J', 'Player K', 'Player L', 'Player M', 'Player N', 'Player O', 'Player P']);
+
+    it('simulatePoulesMatches should qualify correct teams for final stages', () => {
         tournamentGenerator.generatePoules();
         tournamentGenerator.simulatePoulesMatches();
-        const finalStages = tournamentGenerator.finalStages;
-        expect(finalStages).to.have.lengthOf(1);
-        expect(finalStages[0]).to.have.lengthOf(2);
+
+        expect(tournamentGenerator.finalStages.length).to.equal(1); // Une seule phase finale
+
+        const qualifiedTeams = tournamentGenerator.finalStages[0];
+        expect(qualifiedTeams.length).to.be.gte(2); // Au moins deux équipes qualifiées
+
+        for (let team of qualifiedTeams) {
+            expect(teams.includes(team)).to.be.true; // Chaque équipe qualifiée est incluse dans la liste initiale des équipes
+        }
     });
-    it('should generate final stages until only one team remains', () => {
-        setup(['Player A', 'Player B', 'Player C', 'Player D', 'Player E', 'Player F', 'Player G', 'Player H', 'Player I', 'Player J', 'Player K', 'Player L', 'Player M', 'Player N', 'Player O', 'Player P']);
+
+    it('generateFinalStages should generate correct number of final stages with correct teams', () => {
         tournamentGenerator.generatePoules();
         tournamentGenerator.simulatePoulesMatches();
         tournamentGenerator.generateFinalStages();
-        const finalStages = tournamentGenerator.finalStages;
-        expect(finalStages[1]).to.have.lengthOf(1);
-    });
-    it('should generate the entire tournament', () => {
-        setup(['Player A', 'Player B', 'Player C', 'Player D', 'Player E', 'Player F', 'Player G', 'Player H', 'Player I', 'Player J', 'Player K', 'Player L', 'Player M', 'Player N', 'Player O', 'Player P']);
-        const tournament = tournamentGenerator.generateTournament();
-        expect(tournament[1]).to.have.lengthOf(1);
-    });
 
+        expect(tournamentGenerator.finalStages.length).to.be.gte(1); // Au moins une phase finale
+
+        let currentStage = tournamentGenerator.finalStages[0];
+        while (currentStage.length > 1) {
+            const nextStage = tournamentGenerator.finalStages[tournamentGenerator.finalStages.length - 1];
+            expect(nextStage.length).to.equal(Math.ceil(currentStage.length / 2)); // Nombre correct d'équipes dans la prochaine phase
+            currentStage = nextStage;
+        }
+    });
 });

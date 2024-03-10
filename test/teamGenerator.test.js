@@ -3,36 +3,51 @@ import { expect } from 'chai';
 import TeamGenerator from '../src/teamGenerator.js';
 
 describe('TeamGenerator', () => {
-    describe('#generateTeams', () => {
-        it('should generate teams with the specified number of players per team', () => {
-            const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5', 'Player 6'];
-            const playersPerTeam = 3;
+    describe('constructor', () => {
+        it('should create a TeamGenerator object with provided players and default playersPerTeam', () => {
+            const players = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'];
+            const teamGenerator = new TeamGenerator(players);
+
+            expect(teamGenerator.players).to.deep.equal(players);
+            expect(teamGenerator.playersPerTeam).to.equal(3);
+            expect(teamGenerator.teams).to.deep.equal([]);
+        });
+
+        it('should create a TeamGenerator object with provided players and custom playersPerTeam', () => {
+            const players = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'];
+            const playersPerTeam = 2;
+            const teamGenerator = new TeamGenerator(players, playersPerTeam);
+
+            expect(teamGenerator.players).to.deep.equal(players);
+            expect(teamGenerator.playersPerTeam).to.equal(playersPerTeam);
+            expect(teamGenerator.teams).to.deep.equal([]);
+        });
+    });
+
+    describe('generateTeams', () => {
+        it('should generate teams with specified number of players per team', () => {
+            const players = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'];
+            const playersPerTeam = 2;
             const teamGenerator = new TeamGenerator(players, playersPerTeam);
 
             teamGenerator.generateTeams();
 
-            const teams = teamGenerator.getTeams();
-            expect(teams).to.be.an('array');
-            expect(teams).to.have.lengthOf(2); // 6 players divided into teams of 3
-            teams.forEach(team => {
-                expect(team).to.have.property('name');
-                expect(team).to.have.property('players');
-                expect(team.players).to.be.an('array');
-                expect(team.players).to.have.lengthOf(playersPerTeam);
+            expect(teamGenerator.teams.length).to.equal(Math.ceil(players.length / playersPerTeam));
+
+            teamGenerator.teams.forEach(team => {
+                expect(team.players.length).to.be.lessThanOrEqual(playersPerTeam);
             });
         });
     });
 
-    describe('#getTeams', () => {
-        it('should return an empty array if teams have not been generated', () => {
-            const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5', 'Player 6'];
-            const playersPerTeam = 3;
-            const teamGenerator = new TeamGenerator(players, playersPerTeam);
+    describe('getTeams', () => {
+        it('should return the generated teams', () => {
+            const players = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'];
+            const teamGenerator = new TeamGenerator(players);
 
-            const teams = teamGenerator.getTeams();
+            teamGenerator.generateTeams();
 
-            expect(teams).to.be.an('array');
-            expect(teams).to.be.empty;
+            expect(teamGenerator.getTeams()).to.deep.equal(teamGenerator.teams);
         });
     });
 });

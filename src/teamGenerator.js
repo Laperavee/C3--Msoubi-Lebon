@@ -28,4 +28,3 @@ class TeamGenerator {
 
 export default  TeamGenerator
 // Exemple d'utilisation
-
