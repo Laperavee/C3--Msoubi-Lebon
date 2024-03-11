@@ -25,6 +25,25 @@ class TournamentGenerator {
         this.finalStages.push(qualifiedTeams);
         console.log("Équipes qualifiées pour les phases finales :", this.finalStages[0]);
     }
+    generateDeathMatchTournament() {
+        this.DeathMatch = this.teams;
+        while (this.DeathMatch.length > 1) {
+            let QualifiedTeams = [];
+            for (let i = 0; i < this.DeathMatch.length; i += 2) {
+                let winnerIndex = Math.floor(Math.random() * 2);
+                let winner = this.DeathMatch[i + winnerIndex];
+                QualifiedTeams.push(winner);
+            }
+            if (QualifiedTeams.length > 0 && QualifiedTeams[0] !== undefined) {
+                this.DeathMatch = QualifiedTeams;
+            } else {
+                break;
+            }
+        }
+        console.log("Vainqueur du tournoi :", this.DeathMatch[0]);
+    }
+
+
 
     generateFinalStages() {
         let currentStage = this.finalStages[0];
