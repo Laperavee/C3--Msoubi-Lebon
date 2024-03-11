@@ -56,4 +56,8 @@ describe('TournamentGenerator', () => {
             currentStage = nextStage;
         }
     });
-});
+    it('generateFinalStages without Poules', () => {
+        tournamentGenerator.generateDeathMatchTournament();
+        expect(tournamentGenerator.DeathMatch.length).to.be.gte(1);
+    });
+})

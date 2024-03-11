@@ -3,6 +3,7 @@ class TournamentGenerator {
         this.teams = teams; // Chaque équipe est un objet { name: string, players: array }
         this.poules = [];
         this.finalStages = []; // Les phases finales
+        this.DeathMatch = [];
     }
 
 
@@ -24,7 +25,6 @@ class TournamentGenerator {
         this.finalStages.push(qualifiedTeams);
         console.log("Équipes qualifiées pour les phases finales :", this.finalStages[0]);
     }
-
 
     generateFinalStages() {
         let currentStage = this.finalStages[0];
